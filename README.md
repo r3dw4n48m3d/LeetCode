@@ -1,6 +1,6 @@
 <div align='center'>
 
-<h1>Books</h1>
+<h1>LeetCode Solution</h1>
 <p>Solutions of LeetCode</p>
 <i>R3DW4N 48M3D</i>
 
