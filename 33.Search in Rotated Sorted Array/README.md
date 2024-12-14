@@ -1,7 +1,6 @@
 ---
 comments: true
 difficulty: Medium
-edit_url: https://github.com/doocs/leetcode/edit/main/solution/0000-0099/0033.Search%20in%20Rotated%20Sorted%20Array/README_EN.md
 tags:
     - Array
     - Binary Search
@@ -11,7 +10,6 @@ tags:
 
 # [33. Search in Rotated Sorted Array](https://leetcode.com/problems/search-in-rotated-sorted-array)
 
-[中文文档](/solution/0000-0099/0033.Search%20in%20Rotated%20Sorted%20Array/README.md)
 
 ## Description
 
@@ -53,74 +51,7 @@ tags:
 
 <!-- solution:start -->
 
-### Solution 1: Binary Search
-
-We use binary search to divide the array into two parts, $[left,.. mid]$ and $[mid + 1,.. right]$. At this point, we can find that one part must be sorted.
-
-Therefore, we can determine whether $target$ is in this part based on the sorted part:
-
--   If the elements in the range $[0,.. mid]$ form a sorted array:
-    -   If $nums[0] \leq target \leq nums[mid]$, then our search range can be narrowed down to $[left,.. mid]$;
-    -   Otherwise, search in $[mid + 1,.. right]$;
--   If the elements in the range $[mid + 1, n - 1]$ form a sorted array:
-    -   If $nums[mid] \lt target \leq nums[n - 1]$, then our search range can be narrowed down to $[mid + 1,.. right]$;
-    -   Otherwise, search in $[left,.. mid]$.
-
-The termination condition for binary search is $left \geq right$. If at the end we find that $nums[left]$ is not equal to $target$, it means that there is no element with a value of $target$ in the array, and we return $-1$. Otherwise, we return the index $left$.
-
-The time complexity is $O(\log n)$, where $n$ is the length of the array $nums$. The space complexity is $O(1)$.
-
-<!-- tabs:start -->
-
-#### Python3
-
-```python
-class Solution:
-    def search(self, nums: List[int], target: int) -> int:
-        n = len(nums)
-        left, right = 0, n - 1
-        while left < right:
-            mid = (left + right) >> 1
-            if nums[0] <= nums[mid]:
-                if nums[0] <= target <= nums[mid]:
-                    right = mid
-                else:
-                    left = mid + 1
-            else:
-                if nums[mid] < target <= nums[n - 1]:
-                    left = mid + 1
-                else:
-                    right = mid
-        return left if nums[left] == target else -1
-```
-
-#### Java
-
-```java
-class Solution {
-    public int search(int[] nums, int target) {
-        int n = nums.length;
-        int left = 0, right = n - 1;
-        while (left < right) {
-            int mid = (left + right) >> 1;
-            if (nums[0] <= nums[mid]) {
-                if (nums[0] <= target && target <= nums[mid]) {
-                    right = mid;
-                } else {
-                    left = mid + 1;
-                }
-            } else {
-                if (nums[mid] < target && target <= nums[n - 1]) {
-                    left = mid + 1;
-                } else {
-                    right = mid;
-                }
-            }
-        }
-        return nums[left] == target ? left : -1;
-    }
-}
-```
+### Solution : Binary Search
 
 #### C++
 
@@ -128,171 +59,30 @@ class Solution {
 class Solution {
 public:
     int search(vector<int>& nums, int target) {
-        int n = nums.size();
-        int left = 0, right = n - 1;
-        while (left < right) {
-            int mid = (left + right) >> 1;
-            if (nums[0] <= nums[mid]) {
-                if (nums[0] <= target && target <= nums[mid])
-                    right = mid;
-                else
-                    left = mid + 1;
-            } else {
-                if (nums[mid] < target && target <= nums[n - 1])
-                    left = mid + 1;
-                else
-                    right = mid;
-            }
-        }
-        return nums[left] == target ? left : -1;
-    }
-};
-```
+        int start = 0, end = nums.size() - 1;
 
-#### Go
+        while(start <= end){
+            int mid = start + (end - start) / 2;
 
-```go
-func search(nums []int, target int) int {
-	n := len(nums)
-	left, right := 0, n-1
-	for left < right {
-		mid := (left + right) >> 1
-		if nums[0] <= nums[mid] {
-			if nums[0] <= target && target <= nums[mid] {
-				right = mid
-			} else {
-				left = mid + 1
-			}
-		} else {
-			if nums[mid] < target && target <= nums[n-1] {
-				left = mid + 1
-			} else {
-				right = mid
-			}
-		}
-	}
-	if nums[left] == target {
-		return left
-	}
-	return -1
-}
-```
-
-#### TypeScript
-
-```ts
-function search(nums: number[], target: number): number {
-    const n = nums.length;
-    let left = 0,
-        right = n - 1;
-    while (left < right) {
-        const mid = (left + right) >> 1;
-        if (nums[0] <= nums[mid]) {
-            if (nums[0] <= target && target <= nums[mid]) {
-                right = mid;
-            } else {
-                left = mid + 1;
-            }
-        } else {
-            if (nums[mid] < target && target <= nums[n - 1]) {
-                left = mid + 1;
-            } else {
-                right = mid;
-            }
-        }
-    }
-    return nums[left] == target ? left : -1;
-}
-```
-
-#### Rust
-
-```rust
-impl Solution {
-    pub fn search(nums: Vec<i32>, target: i32) -> i32 {
-        let mut l = 0;
-        let mut r = nums.len() - 1;
-        while l <= r {
-            let mid = (l + r) >> 1;
-            if nums[mid] == target {
-                return mid as i32;
+            if(nums[mid] == target){ // Result
+                return mid;
             }
 
-            if nums[l] <= nums[mid] {
-                if target < nums[mid] && target >= nums[l] {
-                    r = mid - 1;
-                } else {
-                    l = mid + 1;
+            if(nums[start] <= nums[mid]){ // If Left side is sorted
+                if(nums[start] <= target && target <= nums[mid]){
+                    end = mid - 1;
+                }else{
+                    start = mid + 1;
                 }
-            } else {
-                if target > nums[mid] && target <= nums[r] {
-                    l = mid + 1;
-                } else {
-                    r = mid - 1;
+            }else{ // If Right side is sorted
+                if(nums[mid] <= target && target <= nums[end]){
+                    start = mid + 1;
+                }else{
+                    end = mid - 1;
                 }
             }
         }
-        -1
+        return -1;
     }
-}
-```
-
-#### JavaScript
-
-```js
-/**
- * @param {number[]} nums
- * @param {number} target
- * @return {number}
- */
-var search = function (nums, target) {
-    const n = nums.length;
-    let left = 0,
-        right = n - 1;
-    while (left < right) {
-        const mid = (left + right) >> 1;
-        if (nums[0] <= nums[mid]) {
-            if (nums[0] <= target && target <= nums[mid]) {
-                right = mid;
-            } else {
-                left = mid + 1;
-            }
-        } else {
-            if (nums[mid] < target && target <= nums[n - 1]) {
-                left = mid + 1;
-            } else {
-                right = mid;
-            }
-        }
-    }
-    return nums[left] == target ? left : -1;
 };
 ```
-
-#### PHP
-
-```php
-class Solution {
-    /**
-     * @param integer[] $nums
-     * @param integer $target
-     * @return integer
-     */
-
-    function search($nums, $target) {
-        $foundKey = -1;
-        foreach ($nums as $key => $value) {
-            if ($value === $target) {
-                $foundKey = $key;
-            }
-        }
-        return $foundKey;
-    }
-}
-```
-
-<!-- tabs:end -->
-
-<!-- solution:end -->
-
-<!-- problem:end -->
